@@ -7,6 +7,36 @@ const SignupForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const confirmPasswordInputRef = useRef();
+
+  const submitHandler = async(e) => {
+    e.preventDefault();
+    const enteredEmail = emailInputRef.current.value;
+    const enteredPassword = passwordInputRef.current.value;
+    const enteredConfirmPassword = confirmPasswordInputRef.current.value;
+
+    if(enteredPassword !== enteredConfirmPassword){
+      alert('Entered Password is not same as the confirmed password');
+    }
+    try{
+      const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDk7rzRZ8NqSoY0Doe49YZ8sDXPhnRK9Vs',
+      {
+        method: "POST",
+        body: JSON.stringify({
+          email: enteredEmail,
+          password: enteredPassword,
+          returnSecureToken: true
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+      const data = await response.json();
+    }catch(error){
+      alert(error);
+    }
+    formRef.current.reset();
+  };
+
   return (
     <div className={classes.signup}>
       <h1>Sign up</h1>
@@ -29,7 +59,7 @@ const SignupForm = () => {
               required
             />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
             <Form.Label>Confirm Password</Form.Label>
             <Form.Control 
               type='password'
@@ -38,7 +68,7 @@ const SignupForm = () => {
               required
             />
         </Form.Group>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" onClick={submitHandler}>
             Sign up
         </Button>
       </Form>
