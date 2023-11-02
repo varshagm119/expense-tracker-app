@@ -31,11 +31,13 @@ const LoginForm = () => {
           "content-type": "application/json"
         }
       })
-      const data = response.json();
-      console.log(data)
+      const data = await response.json();
+      //console.log(data)
+      localStorage.setItem('user',data.idToken);
     }catch(error){
       alert(error)
     }
+    formRef.current.reset();
   };
 
   return (
