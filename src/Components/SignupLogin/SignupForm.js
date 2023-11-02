@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import classes from "./SignupForm.module.css";
 import { Form, Button } from "react-bootstrap";
 
@@ -8,8 +8,12 @@ const SignupForm = () => {
   const passwordInputRef = useRef();
   const confirmPasswordInputRef = useRef();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState(false);
+
   const submitHandler = async(e) => {
     e.preventDefault();
+    setIsLoading(true);
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
     const enteredConfirmPassword = confirmPasswordInputRef.current.value;
@@ -31,6 +35,33 @@ const SignupForm = () => {
         },
       });
       const data = await response.json();
+      if(response.ok){
+        try{
+          const res = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDk7rzRZ8NqSoY0Doe49YZ8sDXPhnRK9Vs',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              requestType: 'VERIFY_EMAIL',
+              idToken: data.idToken
+            }),
+            headers: {
+              "content-type": "application/json",
+            },
+          })
+          if(res.ok){
+            setIsLoading(false);
+            alert('Verification email sent');
+            setVerifyEmail(true);
+            setTimeout(() => {
+              setVerifyEmail(false);
+            }, 10000)
+          } else {
+            throw new Error("Sign up failed, try again.");
+          }
+        }catch(err){
+          alert(err);
+        }
+      }
     }catch(error){
       alert(error);
     }
