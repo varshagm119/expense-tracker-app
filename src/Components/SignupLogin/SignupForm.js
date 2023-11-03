@@ -64,6 +64,7 @@ const SignupForm = () => {
       }
     }catch(error){
       alert(error);
+      setIsLoading(false);
     }
     formRef.current.reset();
   };
