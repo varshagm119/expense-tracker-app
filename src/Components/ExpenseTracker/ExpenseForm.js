@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classes from "./ExpenseForm.module.css";
 import { Button } from "react-bootstrap";
+import axios from "axios";
 
 const ExpenseForm = () => {
   const amtInputRef = useRef();
@@ -9,9 +10,46 @@ const ExpenseForm = () => {
   const cateRef = useRef();
   const formRef = useRef();
 
+  const [isInputValid, setIsInputValid] = useState(true);
+
+  const getExpenseFromDb = async() => {
+    const res = await axios.get('https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/expense.json');
+    console.log(res);
+  }
+  useEffect(()=>{
+    getExpenseFromDb();
+  },[])
+
+  const addExpenseHandler = async(e) => {
+    e.preventDefault();
+    if(
+        amtInputRef.current.value === "" ||
+        desInputRef.current.value === "" ||
+        dateRef.current.value === ""
+    ){
+        setIsInputValid(false);
+        return;
+    }
+
+    setIsInputValid(true);
+    const expenseItem = {
+        id: Math.random().toString(),
+        enteredAmt: amtInputRef.current.value,
+        enteredDesc: desInputRef.current.value,
+        date: dateRef.current.value,
+        category: cateRef.current.value
+    }
+    formRef.current.reset();
+    try{
+        const response = await axios.post('https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/expense.json',expenseItem);
+       
+    }catch(err){alert(err);}
+  }
+
   return (
     <section className={classes.expenseCon}>
       <form ref={formRef}>
+        {!isInputValid && <p style={{color: 'red'}}>Please fill all inputs.</p>}
         <section>
           <div className={classes.amt}>
             <label htmlFor="Amount">Amount</label>
@@ -35,7 +73,7 @@ const ExpenseForm = () => {
             </select>
           </div>
         </section>
-        <Button type="submit" >Add Expense</Button>
+        <Button type="submit" onClick={addExpenseHandler}>Add Expense</Button>
       </form>
     </section>
   );

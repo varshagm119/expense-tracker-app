@@ -36,6 +36,7 @@ const LoginForm = (props) => {
       const data = await response.json();
       //console.log(data)
       localStorage.setItem("user", data.idToken);
+      localStorage.setItem("userEmail", enteredEmail);
     } catch (error) {
       alert(error);
     }
