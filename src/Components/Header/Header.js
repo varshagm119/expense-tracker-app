@@ -21,6 +21,11 @@ const Header = () => {
               </Link>
             </Nav>
             <Nav className="me-auto">
+              <Link to="/expense" className="nav-link">
+                Expense
+              </Link>
+            </Nav>
+            <Nav className="me-auto">
               <Button onClick={logOutHandle}>Log out</Button>
             </Nav>
           </Navbar.Collapse>
