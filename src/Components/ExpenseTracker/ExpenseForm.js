@@ -12,14 +12,6 @@ const ExpenseForm = () => {
 
   const [isInputValid, setIsInputValid] = useState(true);
 
-  const getExpenseFromDb = async() => {
-    const res = await axios.get('https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/expense.json');
-    console.log(res);
-  }
-  useEffect(()=>{
-    getExpenseFromDb();
-  },[])
-
   const addExpenseHandler = async(e) => {
     e.preventDefault();
     if(
