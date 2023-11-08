@@ -2,29 +2,48 @@ import React, { useEffect, useState } from "react";
 import classes from "./ExpenseList.module.css";
 import axios from "axios";
 import { AiFillDelete, AiFillEdit } from "react-icons/ai";
+import { expenseActions } from "../../store/expense-slice";
+import { useDispatch, useSelector } from "react-redux";
+
 const ExpenseList = () => {
   const [expenseData, setExpenseData] = useState([]);
-  const getExpenseFromDb = async () => {
-    const res = await axios.get(
-      "https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/expense.json"
-    );
-    if (res.data) {
-      const expenseArray = Object.values(res.data);
-      setExpenseData(expenseArray);
+
+  const auth = useSelector((state) => state.auth);
+  const expense = useSelector((state) => state.expenseStore);
+  const dispatch = useDispatch();
+
+  const restoreItems = async () => {
+    const email = auth.userEmail.replace(/[.@]/g, "");
+    try {
+      const res = await axios.get(
+        `https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expense.json`
+      );
+      const data = res.data;
+      if (data) {
+        const realData = Object.values(data).reverse();
+        dispatch(expenseActions.setItems(realData));
+      }
+    } catch (err) {
+      alert(err);
     }
   };
   useEffect(() => {
-    getExpenseFromDb();
-  }, []);
+    if (auth.userEmail !== null) {
+      restoreItems();
+    }
+  }, [auth.userEmail]);
 
-  const editClickHandler = async (record) => {};
+  const editClickHandler = async (record) => {
+    const filter = expense.items.filter(ele => ele !== record);
+    dispatch(expenseActions.editItem({item: record, filtered: filter}))
+  };
 
   const deleteClickHandler = async (record) => {
-    const filteredExpenseData = expenseData.filter(data => data.id === record.id);
-    setExpenseData(filteredExpenseData);
+    dispatch(expenseActions.removeItem(record));
+    const email =auth.userEmail.replace(/[.@]/g, "");
     try {
       const res = await axios.get(
-        "https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/expense.json"
+        `https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expense.json`
       );
       const data = res.data;
       const Id = Object.keys(data).find(
@@ -32,7 +51,7 @@ const ExpenseList = () => {
       );
       try {
         const res = await axios.delete(
-          `https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/expense/${Id}.json`
+          `https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expense/${Id}.json`
         );
       } catch (err) {
         alert(err);
@@ -48,7 +67,7 @@ const ExpenseList = () => {
         <h1>Expenses</h1>
       </div>
       <ul>
-        {expenseData.map((record, index) => (
+        {expense.items.map((record, index) => (
           <li className={classes.listItem} key={index}>
             <div className={classes.date}>{record.date}</div>
             <h3 className={classes.category}>

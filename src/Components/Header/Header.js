@@ -1,12 +1,16 @@
 import React from "react";
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
+import { authActions } from "../../store/auth-slice";
 
 const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const auth = useSelector(state => state.auth);
   const logOutHandle = () => {
-    navigate("/");
-    localStorage.removeItem("user");
+    dispatch(authActions.logout())
+    navigate("/",{replace: true});
   };
   return (
     <div>

@@ -101,8 +101,13 @@ const SignupForm = () => {
             />
         </Form.Group>
         <Button variant="primary" type="submit" onClick={submitHandler}>
-            Sign up
+          {!isLoading ? 'Sign up' : 'Sending request...'}
         </Button>
+        { verifyEmail && (
+          <p style={{margin: "1rem", color:"green"}}>
+            Please verify email. verification mail already sent
+          </p>
+        )}
       </Form>
     </div>
   );
