@@ -8,13 +8,13 @@ const UpdateProfileForm = (props) => {
   const emailInputRef = useRef();
   const contactInputRef = useRef();
   const locationInputRef = useRef();
-
+    console.log(props.user)
   useEffect(() => {
     if(props.user){
         if(props.user.displayName){
             nameInputRef.current.value = props.user.displayName;
         }
-        emailInputRef.current.value = props.user.email
+        emailInputRef.current.value = props.user.email;
     }
   },[props.user]);
 

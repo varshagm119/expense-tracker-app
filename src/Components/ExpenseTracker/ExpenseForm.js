@@ -18,14 +18,14 @@ const ExpenseForm = () => {
   const expense = useSelector((state) => state.expenseStore);
   const dispatch = useDispatch();
 
-  useEffect( () => {
-    if(expense.editItems !== null){
+  useEffect(() => {
+    if (expense.editItems !== null) {
       amtInputRef.current.value = expense.editItems.enteredAmt;
       desInputRef.current.value = expense.editItems.enteredDesc;
       dateRef.current.value = expense.editItems.date;
       cateRef.current.value = expense.editItems.category;
     }
-  },[expense.editItems]);
+  }, [expense.editItems]);
 
   const addExpenseHandler = async (e) => {
     e.preventDefault();
@@ -39,6 +39,31 @@ const ExpenseForm = () => {
     }
 
     setIsInputValid(true);
+
+    if (expense.editItems !== null) {
+      const email = auth.userEmail.replace(/[.@]/g, "");
+      try {
+        const res = await axios.get(
+          `https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expense.json`
+        );
+        const data = res.data;
+        const Id = Object.keys(data).find(
+          (eleId) => data[eleId].id === expense.editItems.id
+        );
+        try {
+          const resDlt = await axios.delete(
+            `https://expensetracker-b5d53-default-rtdb.asia-southeast1.firebasedatabase.app/${email}/expense/${Id}.json`
+          );
+        } catch (e) {
+          alert(e);
+        }
+      } catch (e) {
+        alert(e);
+      }
+
+      dispatch(expenseActions.setEditItemsNull());
+    }
+
     const expenseItem = {
       id: Math.random().toString(),
       enteredAmt: amtInputRef.current.value,
@@ -46,7 +71,6 @@ const ExpenseForm = () => {
       date: dateRef.current.value,
       category: cateRef.current.value,
     };
-    
 
     //to get the email from auth to insert in posting the data in db
     const email = auth.userEmail.replace(/[.@]/g, "");

@@ -2,6 +2,19 @@
   text-align: center;
 }
 
+
+.darkTheme {
+  background-color: rgb(39, 36, 36);
+  color: white;
+  overflow: auto;
+}
+.lightTheme {
+  height: 100vh;
+  overflow: auto;
+  background-color: rgb(183, 235, 235);
+}
+
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

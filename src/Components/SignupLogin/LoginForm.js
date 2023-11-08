@@ -33,7 +33,7 @@ const LoginForm = (props) => {
     clearTimeout(logoutTimerRef.current);
     logoutTimerRef.current = setTimeout(() => {
       handleLogout();
-    }, 5 * 60000);
+    }, 5*60000);
   };
 
   const handleLogout = () => {

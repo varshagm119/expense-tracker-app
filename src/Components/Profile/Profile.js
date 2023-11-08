@@ -4,12 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import UpdateProfileForm from "./UpdateProfileForm";
 import { authActions } from "../../store/auth-slice";
 import { expenseActions } from "../../store/expense-slice";
+import {themeActions} from '../../store/theme-slice';
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "react-bootstrap";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
+  const isDarkMode = useSelector((state) => state.theme.isDark);
   const location = useLocation();
   const navigate = useNavigate();
   const isLocation = location.pathname === "/profile";
@@ -42,6 +44,9 @@ const Profile = () => {
   }, []);
 
   const clickLogoutHandler = () => {
+    if(isDarkMode === true){
+      dispatch(themeActions.toggleTheme());
+    }
     dispatch(authActions.logout());
     dispatch(expenseActions.setItemsEmpty());
     navigate("/", {replace: true});
